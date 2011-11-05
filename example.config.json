@@ -1,0 +1,11 @@
+{
+  "development": {
+    "http_server_port": 3000,
+    "keys": {
+      "foursquare": {
+        "client_id": "",
+        "client_secret": ""
+      }
+    }
+  }
+}
