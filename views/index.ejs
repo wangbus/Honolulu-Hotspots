@@ -41,6 +41,7 @@
 
       $(function() {
         google.maps.event.addDomListener(window, 'load', initialize);
+        $("table#venueResultsTable").tablesorter();
       });
 
       function initialize() {
@@ -89,6 +90,7 @@ function deleteOverlays() {
           url: '/venues/' + venueQuery
         }).done(function( msg ) {
           deleteOverlays();
+          $("tbody", "#venueResultsTable").empty();
           $.each(msg, function(index, value) {
             console.log(value.name);
             var latlng = new google.maps.LatLng(value.location.lat,
@@ -103,6 +105,13 @@ function deleteOverlays() {
               });
               markersArray.push(marker);
             }, index * 75);
+            var newRow = $(
+              "<tr><td>" + value.name +
+              "</td><td>" + value.location.address +
+              "</td><td>" + value.stats.checkinsCount +
+              "</td></tr>");
+            $("#venueResultsTable").append(newRow);
+            $("#venueResultsTable").tablesorter();
           });
         });
       }
@@ -140,6 +149,20 @@ function deleteOverlays() {
         </div>
         
         <div class="span6" id="map_canvas"></div>
+      </div>
+      <div class="row">
+	<script src="/public/js/jquery.tablesorter.min.js"></script>
+	<table class="zebra-striped" id="venueResultsTable">
+        <thead>
+          <tr>
+            <th class="orange">Name</th>
+            <th class="yellow">Address</th>
+            <th class="blue">Check-ins</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
       </div>
       <!-- Example row of columns -->
       <div class="row">
