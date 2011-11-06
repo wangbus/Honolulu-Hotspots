@@ -43,6 +43,7 @@ httpServer = express.createServer()
 httpServer.configure () ->
   httpServer.use(express.cookieParser())
   httpServer.use(express.bodyParser())
+  httpServer.use(express.session({ secret: "hh_wangb_us" }))
 
 httpServer.configure 'development', () ->
   httpServer.use('/public', express.static(__dirname + '/public'))
