@@ -36,6 +36,7 @@
       src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript">
+      var eworld = new google.maps.LatLng(21.307620, -157.862358);
       var map;
       $(function() {
         google.maps.event.addDomListener(window, 'load', initialize);
@@ -49,10 +50,25 @@
         };
         map = new google.maps.Map(document.getElementById('map_canvas'),
             myOptions);
+            
+        var marker = new google.maps.Marker({
+          map: map,
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+          position: eworld,
+          title: 'eWorld'
+        });
+        //google.maps.event.addListener(marker, 'click', toggleBounce);      
       }
 
       function onSearchVenues(venueQuery) {
         console.log('searchVenues ' + venueQuery);
+        $.ajax({
+          type: 'GET',
+          url: '/venues/' + venueQuery
+        }).done(function( msg ) {
+          console.log(msg);
+        });
       }
     </script>
   </head>
