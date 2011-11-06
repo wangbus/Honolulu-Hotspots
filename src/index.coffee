@@ -39,6 +39,9 @@ httpServer.set('view engine', 'ejs')
 httpServer.get '/', (req, res) ->
   res.render 'index', { layout: false }
 
+httpServer.get '/venues/:searchQuery', (req, res) ->
+  res.send 'venues'
+
 httpServer.listen(3000)
 util.log("Listening on port: 3000")
 

@@ -5,7 +5,8 @@
     <title>Honolulu Hotspots - Where you like go today?</title>
     <meta name="description" content="">
     <meta name="author" content="">
-
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no">
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -17,6 +18,12 @@
       body {
         padding-top: 60px;
       }
+      #map_canvas {
+        margin: 0;
+        padding: 0;
+        height: 400px;
+        width: 450px;
+      }
     </style>
 
     <!-- Le fav and touch icons -->
@@ -24,10 +31,33 @@
     <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+
+    <script type="text/javascript"
+      src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript">
+      var map;
+      $(function() {
+        google.maps.event.addDomListener(window, 'load', initialize);
+      });
+
+      function initialize() {
+        var myOptions = {
+          zoom: 15,
+          center: new google.maps.LatLng(21.3069444, -157.8583333),
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById('map_canvas'),
+            myOptions);
+      }
+
+      function onSearchVenues(venueQuery) {
+        console.log('searchVenues ' + venueQuery);
+      }
+    </script>
   </head>
 
   <body>
-
     <div class="topbar">
       <div class="fill">
         <div class="container">
@@ -42,29 +72,38 @@
     </div>
 
     <div class="container">
-
       <!-- Main hero unit for a primary marketing message or call to action -->
-      <div class="hero-unit">
-        <h1>Hotspots!!!<h1>
-        <p>Where you like go today?</p>
-        <p><a class="btn primary large">Learn more &raquo;</a></p>
+      <div class="hero-unit row">
+        <div class="span6">
+          <h1>Hotspots!!!</h1>
+          <p>Where you like go today?</p>
+          <p>
+            <input class="xlarge" id="venueSearchInput" name="xlInput" size="30"
+            type="text" />
+          </p>
+          <p>
+            <a class="btn primary large"
+              onclick="onSearchVenues($('#venueSearchInput').val());">Shoooooots &raquo;</a>
+          </p>
+        </div>
+        
+        <div class="span6" id="map_canvas"></div>
       </div>
-
       <!-- Example row of columns -->
       <div class="row">
         <div class="span6">
-          <h2>Heading</h2>
-          <p>Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.</p>
+          <h2>Meet New People!</h2>
+          <p>New to Honolulu? Find the most happening joints in town to meet new people at.</p>
           <p><a class="btn" href="#">View details &raquo;</a></p>
         </div>
         <div class="span5">
-          <h2>Heading</h2>
-           <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+          <h2>Party!</h2>
+           <p>Holiday Weekend? Find somewhere to hang out and celebrate!</p>
           <p><a class="btn" href="#">View details &raquo;</a></p>
        </div>
         <div class="span5">
-          <h2>Heading</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+          <h2>Sports Viewing</h2>
+          <p>Find out where everyone else is gathering to see the game of the season! Grab a drink and cheer your team on with other fans!</p>
           <p><a class="btn" href="#">View details &raquo;</a></p>
         </div>
       </div>
