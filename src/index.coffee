@@ -14,10 +14,21 @@ else
 throw "Unable to load config via env and fs." unless config
 
 httpServer = express.createServer()
-httpServer.use(express.bodyParser())
+httpServer.configure () ->
+  httpServer.use(express.cookieParser())
+  httpServer.use(express.bodyParser())
 
+httpServer.configure 'development', () ->
+  httpServer.use('/public', express.static(__dirname + '/public'))
+  httpServer.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
+
+httpServer.configure 'production', () ->
+  httpServer.use('/public', express.static(__dirname + '/public'), { maxAge: 31557600000 })
+  httpServer.use(express.errorHandler())
+
+httpServer.set('view engine', 'ejs')
 httpServer.get '/', (req, res) ->
-  res.send "root"
+  res.render 'index', { layout: false }
 
 httpServer.listen(3000)
 util.log("Listening on port: 3000")
