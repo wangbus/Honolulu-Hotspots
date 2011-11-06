@@ -2,6 +2,7 @@ sys = require 'sys'
 util = require 'util'
 express = require 'express'
 
+# fs or env cfg
 config = false
 if process.env.HH_CONFIG
   util.log "Using ENV config"
@@ -13,6 +14,14 @@ else
 
 throw "Unable to load config via env and fs." unless config
 
+if (process.env.NODE_ENV == 'production')
+  config = config.production
+  util.log(">> #{process.env.NODE_ENV} configuration loaded.") 
+else
+  config = config.development
+  util.log(">> development configuration loaded.") 
+
+# server cfg 
 httpServer = express.createServer()
 httpServer.configure () ->
   httpServer.use(express.cookieParser())
