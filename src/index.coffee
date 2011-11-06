@@ -21,6 +21,18 @@ else
   config = config.development
   util.log(">> development configuration loaded.") 
 
+# foursquare cfg
+foursquareConfig = {
+  "secrets" : {
+    "clientId" : config.keys.foursquare.clientId,
+    "clientSecret" : config.keys.foursquare.clientSecret,
+    "redirectUrl" : 'http://' + config.http.host + ':' + config.http.port + '/foursquare/callback'
+  }
+}
+
+Foursquare = require('node-foursquare')(foursquareConfig)
+foursquareAccessToken = undefined
+
 # server cfg 
 httpServer = express.createServer()
 httpServer.configure () ->
@@ -40,8 +52,30 @@ httpServer.get '/', (req, res) ->
   res.render 'index', { layout: false }
 
 httpServer.get '/venues/:searchQuery', (req, res) ->
-  res.send 'venues'
+  res.redirect(Foursquare.getAuthClientRedirectUrl()) unless foursquareAccessToken
+  util.log(">> searchQuery: #{req.params.searchQuery}")
 
-httpServer.listen(3000)
-util.log("Listening on port: 3000")
+  Foursquare.Venues.search(
+    21.3069444, -157.8583333,
+    { query: req.params.searchQuery, limit: 50 },
+    foursquareAccessToken,
+    (error, searchResult) ->
+      venues = searchResult.venues
+      for venue in venues
+        util.log(venue.name)
+      res.send venues
+  )
+  # res.end();
+  #res.send req.params.searchQuery 
+
+httpServer.get '/foursquare/callback', (req, res) ->
+  Foursquare.getAccessToken({ code: req.query.code }, (err, accessToken) ->
+    util.log("access token code: #{req.query.code}")
+    foursquareAccessToken = accessToken
+    res.redirect '/'
+  ) unless foursquareAccessToken
+
+port = config.http.port
+httpServer.listen(port)
+util.log("Listening on port: #{port}")
 
