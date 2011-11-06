@@ -58,6 +58,7 @@ httpServer.set('view engine', 'ejs')
 httpServer.get '/', (req, res) ->
   unless (foursquareAccessToken)
     res.redirect(Foursquare.getAuthClientRedirectUrl())
+    util.log(Foursquare.getAuthClientRedirectUrl())
   else
     res.render 'index', { layout: false }
 
