@@ -10,5 +10,17 @@
         "clientSecret": ""
       }
     }
+  },
+  "production": {
+    "http": {
+      "host": "hh.wangb.us",
+      "port": 9000
+    },
+    "keys": {
+      "foursquare": {
+        "clientId": "",
+        "clientSecret": ""
+      }
+    }
   }
 }
