@@ -14,11 +14,15 @@ else
 
 throw "Unable to load config via env and fs." unless config
 
+serverUrl = ""
+
 if (process.env.NODE_ENV == 'production')
   config = config.production
+  serverUrl = "http://#{config.http.host}"
   util.log(">> #{process.env.NODE_ENV} configuration loaded.") 
 else
   config = config.development
+  serverUrl = "http://#{config.http.host}:#{config.http.port}"
   util.log(">> development configuration loaded.") 
 
 # foursquare cfg
@@ -26,7 +30,7 @@ foursquareConfig = {
   "secrets" : {
     "clientId" : config.keys.foursquare.clientId,
     "clientSecret" : config.keys.foursquare.clientSecret,
-    "redirectUrl" : 'http://' + config.http.host + ':' + config.http.port + '/foursquare/callback'
+    "redirectUrl" : "#{serverUrl}/foursquare/callback"
   }
 }
 
