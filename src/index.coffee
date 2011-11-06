@@ -35,6 +35,7 @@ foursquareAccessToken = undefined
 
 # server cfg 
 httpServer = express.createServer()
+
 httpServer.configure () ->
   httpServer.use(express.cookieParser())
   httpServer.use(express.bodyParser())
@@ -48,32 +49,34 @@ httpServer.configure 'production', () ->
   httpServer.use(express.errorHandler())
 
 httpServer.set('view engine', 'ejs')
+
+# server routes
 httpServer.get '/', (req, res) ->
-  res.render 'index', { layout: false }
+  unless (foursquareAccessToken)
+    res.redirect(Foursquare.getAuthClientRedirectUrl())
+  else
+    res.render 'index', { layout: false }
 
 httpServer.get '/venues/:searchQuery', (req, res) ->
-  res.redirect(Foursquare.getAuthClientRedirectUrl()) unless foursquareAccessToken
-  util.log(">> searchQuery: #{req.params.searchQuery}")
-
-  Foursquare.Venues.search(
-    21.3069444, -157.8583333,
-    { query: req.params.searchQuery, limit: 50 },
-    foursquareAccessToken,
-    (error, searchResult) ->
-      venues = searchResult.venues
-      for venue in venues
-        util.log(venue.name)
-      res.send venues
-  )
+  unless (foursquareAccessToken)
+    res.send "not logged in"
+  else
+    util.log(">> searchQuery: #{req.params.searchQuery}")
+    Foursquare.Venues.search(
+      21.3069444, -157.8583333,
+      { query: req.params.searchQuery, limit: 50 },
+      foursquareAccessToken,
+      (error, searchResult) ->
+        res.send(searchResult.venues)
+    )
   # res.end();
   #res.send req.params.searchQuery 
 
 httpServer.get '/foursquare/callback', (req, res) ->
   Foursquare.getAccessToken({ code: req.query.code }, (err, accessToken) ->
-    util.log("access token code: #{req.query.code}")
     foursquareAccessToken = accessToken
     res.redirect '/'
-  ) unless foursquareAccessToken
+  )
 
 port = config.http.port
 httpServer.listen(port)

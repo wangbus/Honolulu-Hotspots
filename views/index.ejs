@@ -36,30 +36,51 @@
       src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript">
-      var eworld = new google.maps.LatLng(21.307620, -157.862358);
       var map;
+      var markersArray = [];
+
       $(function() {
         google.maps.event.addDomListener(window, 'load', initialize);
       });
 
       function initialize() {
         var myOptions = {
-          zoom: 15,
+          zoom: 11,
           center: new google.maps.LatLng(21.3069444, -157.8583333),
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         map = new google.maps.Map(document.getElementById('map_canvas'),
             myOptions);
             
-        var marker = new google.maps.Marker({
-          map: map,
-          draggable: true,
-          animation: google.maps.Animation.DROP,
-          position: eworld,
-          title: 'eWorld'
-        });
         //google.maps.event.addListener(marker, 'click', toggleBounce);      
       }
+// Removes the overlays from the map, but keeps them in the array
+function clearOverlays() {
+  if (markersArray) {
+    for (i in markersArray) {
+      markersArray[i].setMap(null);
+    }
+  }
+}
+
+// Shows any overlays currently in the array
+function showOverlays() {
+  if (markersArray) {
+    for (i in markersArray) {
+      markersArray[i].setMap(map);
+    }
+  }
+}
+
+// Deletes all markers in the array by removing references to them
+function deleteOverlays() {
+  if (markersArray) {
+    for (i in markersArray) {
+      markersArray[i].setMap(null);
+    }
+    markersArray.length = 0;
+  }
+}
 
       function onSearchVenues(venueQuery) {
         console.log('searchVenues ' + venueQuery);
@@ -67,7 +88,22 @@
           type: 'GET',
           url: '/venues/' + venueQuery
         }).done(function( msg ) {
-          console.log(msg);
+          deleteOverlays();
+          $.each(msg, function(index, value) {
+            console.log(value.name);
+            var latlng = new google.maps.LatLng(value.location.lat,
+              value.location.lng);
+            setTimeout(function() {
+              var marker = new google.maps.Marker({
+                map: map,
+                draggable: true,
+                animation: google.maps.Animation.DROP,
+                position: latlng,
+                title: value.name
+              });
+              markersArray.push(marker);
+            }, index * 75);
+          });
         });
       }
     </script>
